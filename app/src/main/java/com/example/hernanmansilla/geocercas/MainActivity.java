@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -27,6 +28,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import static com.example.hernanmansilla.geocercas.GeofenceService.Entre_Geocerca;
+
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "MainActivity";
@@ -40,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     private Button startLocationMonitoring;
     private Button startGeofenceMonitoring;
     private Button stopGeofenceMonitoring;
+    public static EditText Estado_Geocerca;
+    private Button Boton_Refresh;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -52,6 +57,22 @@ public class MainActivity extends AppCompatActivity {
         startLocationMonitoring = (Button) findViewById(R.id.startLocationMonitoring);
         startGeofenceMonitoring = (Button) findViewById(R.id.startGeofenceMonitoring);
         stopGeofenceMonitoring = (Button) findViewById(R.id.stopGeofenceMonitoring);
+        Estado_Geocerca = (EditText) findViewById(R.id.Estado_Geocerca);
+        Boton_Refresh = (Button) findViewById(R.id.Boton_actualizar);
+
+        Boton_Refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Entre_Geocerca==1)
+                {
+                    Estado_Geocerca.setText("Entre Geocerca");
+                }
+                else if(Entre_Geocerca==0)
+                {
+                    Estado_Geocerca.setText("Sali Geocerca");
+                }
+            }
+        });
 
         startLocationMonitoring.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -206,7 +227,6 @@ public class MainActivity extends AppCompatActivity {
         {
             Toast.makeText(MainActivity.this, "Security Exception", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     private void stopGeofenceMonitoring()
