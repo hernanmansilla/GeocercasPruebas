@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="185dp"
+        android:layout_marginTop="161dp"
         android:text="startGeofenceMonitoring" />
 
     <Button
@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="158dp"
+        android:layout_marginBottom="215dp"
         android:text="stopGeofenceMonitoring" />
 
     <EditText
@@ -39,16 +39,77 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginEnd="48dp"
+        android:layout_alignTop="@+id/Boton_actualizar"
+        android:layout_marginEnd="54dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="" />
 
     <Button
         android:id="@+id/Boton_actualizar"
+        android:layout_width="102dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="14dp"
+        android:text="Refresh" />
+
+    <TextView
+        android:id="@+id/Latitud_text"
+        android:layout_width="104dp"
+        android:layout_height="33dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="141dp"
+        android:text="LATITUD:"
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/Longitud_text"
+        android:layout_width="101dp"
+        android:layout_height="31dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="81dp"
+        android:text="LONGITUD:"
+        android:textSize="20dp" />
+
+    <EditText
+        android:id="@+id/Latitud"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Refresh" />
+        android:layout_alignBottom="@+id/Latitud_text"
+        android:layout_alignStart="@+id/Estado_Geocerca"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="" />
+
+    <EditText
+        android:id="@+id/Longitud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/Longitud_text"
+        android:layout_alignStart="@+id/Estado_Geocerca"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="" />
+
+    <Button
+        android:id="@+id/Radio"
+        android:layout_width="124dp"
+        android:layout_height="37dp"
+        android:layout_alignParentStart="true"
+        android:text="RADIO (mts):"
+        android:textSize="14dp" />
+
+    <EditText
+        android:id="@+id/Radio_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/Radio"
+        android:ems="10"
+        android:inputType="number"
+        android:text="" />
 
 </RelativeLayout>

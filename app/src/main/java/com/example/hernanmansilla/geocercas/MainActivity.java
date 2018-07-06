@@ -28,6 +28,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.ArrayList;
+
 import static com.example.hernanmansilla.geocercas.GeofenceService.Entre_Geocerca;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
     public static final String GEOFENCE_ID = "MyGeofenceID";
     public static Context contexto_gral;
-    public static double Latitud;
-    public static double Longitud;
+    public double Latitud;
+    public double Longitud;
 
     GoogleApiClient googleApiClient = null;
 
@@ -45,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
     private Button stopGeofenceMonitoring;
     public static EditText Estado_Geocerca;
     private Button Boton_Refresh;
+    private EditText Latitud_vista;
+    private EditText Longitud_vista;
+    private Button Radio;
+    private EditText Radio_edit;
+    public float Radio_mts=1;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -59,10 +66,18 @@ public class MainActivity extends AppCompatActivity {
         stopGeofenceMonitoring = (Button) findViewById(R.id.stopGeofenceMonitoring);
         Estado_Geocerca = (EditText) findViewById(R.id.Estado_Geocerca);
         Boton_Refresh = (Button) findViewById(R.id.Boton_actualizar);
+        Latitud_vista = (EditText) findViewById(R.id.Latitud);
+        Longitud_vista = (EditText) findViewById(R.id.Longitud);
+        Radio = (Button) findViewById(R.id.Radio);
+        Radio_edit = (EditText) findViewById(R.id.Radio_edit);
 
         Boton_Refresh.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
+                Latitud_vista.setText(Double.toString(Latitud));
+                Longitud_vista.setText(Double.toString(Longitud));
+
                 if(Entre_Geocerca==1)
                 {
                     Estado_Geocerca.setText("Entre Geocerca");
@@ -71,6 +86,19 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Estado_Geocerca.setText("Sali Geocerca");
                 }
+            }
+        });
+
+        Radio.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String Radio_edit_string = null;
+
+                Radio_edit_string = Radio_edit.getText().toString();
+
+                Radio_mts = Float.parseFloat(Radio_edit_string);
+
+                Toast.makeText(MainActivity.this, "Radio añadido", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -167,8 +195,8 @@ public class MainActivity extends AppCompatActivity {
                 public void onLocationChanged(Location location) {
                  //   Toast.makeText(MainActivity.this, "Ubicacion actualizada", Toast.LENGTH_SHORT).show();
 
-                 //   Latitud = location.getLatitude();
-                 //   Longitud = location.getLongitude();
+                    Latitud = location.getLatitude();
+                    Longitud = location.getLongitude();
 
 
                 }
@@ -186,13 +214,13 @@ public class MainActivity extends AppCompatActivity {
 
             Geofence geofence = new Geofence.Builder()
                     .setRequestId(GEOFENCE_ID)
-                    .setCircularRegion(-34,-58,3)
+                    .setCircularRegion(Latitud,Longitud,Radio_mts)
                     .setExpirationDuration(Geofence.NEVER_EXPIRE)
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
                     .build();
 
             GeofencingRequest geofencingRequest = new GeofencingRequest.Builder()
-                 //   .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+                  //  .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
                     .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_EXIT)
                     .addGeofence(geofence).build();
 
@@ -222,6 +250,9 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                         });
+
+                  //  LocationServices.getGeofencingClient();
+
             }
         }catch (SecurityException e)
         {
@@ -231,6 +262,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void stopGeofenceMonitoring()
     {
+        Toast.makeText(MainActivity.this, "StaopGeofence called", Toast.LENGTH_SHORT).show();
 
+        ArrayList<String> geofenceIds = new ArrayList<String>();
+        geofenceIds.add(GEOFENCE_ID);
+        LocationServices.GeofencingApi.removeGeofences(googleApiClient,geofenceIds);
     }
 }
