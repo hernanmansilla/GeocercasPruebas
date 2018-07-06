@@ -28,7 +28,9 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.example.hernanmansilla.geocercas.GeofenceService.Entre_Geocerca;
 
@@ -39,6 +41,10 @@ public class MainActivity extends AppCompatActivity {
     public static Context contexto_gral;
     public double Latitud;
     public double Longitud;
+    public double Latitud_GPS;
+    public double Longitud_GPS;
+    public String Latitud_string;
+    public String Longitud_string;
 
     GoogleApiClient googleApiClient = null;
 
@@ -52,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private Button Radio;
     private EditText Radio_edit;
     public float Radio_mts=1;
+    byte[] Latitud_bytes = new byte[11];
+    byte[] Longitud_bytes = new byte[11];
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -75,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v)
             {
-                Latitud_vista.setText(Double.toString(Latitud));
-                Longitud_vista.setText(Double.toString(Longitud));
+                Latitud_vista.setText(Double.toString(Latitud_GPS));
+                Longitud_vista.setText(Double.toString(Longitud_GPS));
 
                 if(Entre_Geocerca==1)
                 {
@@ -178,6 +186,8 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         Toast.makeText(MainActivity.this, "onStop caller", Toast.LENGTH_SHORT).show();
         googleApiClient.disconnect();
+        Entre_Geocerca=2;
+        Estado_Geocerca.setText("");
     }
 
     private void startLocationMonitoring()
@@ -187,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
         try
         {
             LocationRequest locationRequest = LocationRequest.create()
-                    .setInterval(10000)
+                    .setInterval(1000)
                 .setFastestInterval(5000)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, new LocationListener() {
@@ -198,6 +208,19 @@ public class MainActivity extends AppCompatActivity {
                     Latitud = location.getLatitude();
                     Longitud = location.getLongitude();
 
+                 //   Latitud /= 0.0000001;
+                 //   Longitud /= 0.0000001;
+
+
+                    DecimalFormat df = new DecimalFormat("##.000000");
+                    Latitud_string = df.format(Latitud);
+                    String Latitud_string_aux = Latitud_string.replace(',','.');
+                    Latitud_GPS =  Double.parseDouble(Latitud_string_aux);
+
+                    Longitud_string = df.format(Longitud);
+                    Longitud_bytes = Longitud_string.getBytes();
+                    String Longitud_string_aux = Longitud_string.replace(',','.');
+                    Longitud_GPS =  Double.parseDouble(Longitud_string_aux);
 
                 }
             });
@@ -214,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
 
             Geofence geofence = new Geofence.Builder()
                     .setRequestId(GEOFENCE_ID)
-                    .setCircularRegion(Latitud,Longitud,Radio_mts)
+                    .setCircularRegion(Latitud_GPS,Longitud_GPS,Radio_mts)
                     .setExpirationDuration(Geofence.NEVER_EXPIRE)
                     .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
                     .build();
@@ -223,6 +246,9 @@ public class MainActivity extends AppCompatActivity {
                   //  .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
                     .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_EXIT)
                     .addGeofence(geofence).build();
+
+            Entre_Geocerca=2;
+            Estado_Geocerca.setText("");
 
             Intent intent = new Intent(this, GeofenceService.class);
             PendingIntent pendingIntent = PendingIntent.getService(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
@@ -233,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
             }
             else
             {
-                LocationServices.GeofencingApi.addGeofences(googleApiClient,geofencingRequest,pendingIntent)
+              LocationServices.GeofencingApi.addGeofences(googleApiClient,geofencingRequest,pendingIntent)
                         .setResultCallback(new ResultCallback<Status>()
                         {
 
@@ -267,5 +293,34 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> geofenceIds = new ArrayList<String>();
         geofenceIds.add(GEOFENCE_ID);
         LocationServices.GeofencingApi.removeGeofences(googleApiClient,geofenceIds);
+    }
+
+    public static double toDouble(String a){
+        int sign = 1;
+        int start = 0;
+        if(a.charAt(0) == '-'){
+            start = 1;
+            sign = -1;
+        }
+        double value = 0;
+        boolean decimal = false;
+        int exp = 0;
+
+        for(int i = start; i < a.length(); i++){
+            if(a.charAt(i) == ','){
+                if(decimal) return 0.0;
+                decimal = true;
+            }else{
+                value += (a.charAt(i) - 48) * Math.pow(6,a.length() - i - 1);
+            }
+
+            if(decimal) exp++;
+        }
+
+        value =  value / Math.pow(6,exp);
+        value *= sign;
+        System.out.println(value);
+        return value;
+
     }
 }
